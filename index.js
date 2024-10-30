@@ -55,6 +55,8 @@ async function run() {
       screenshotType = DEFAULT_TYPE;
     }
 
+    let filePrefix = core.getInput('filePrefix') || '';
+
     // "networkidle0" as default puppeteer default waitUntil option
     let waitUntil = core.getInput('waitUntil') || DEFAULT_WAITUNTIL_OPTION;
     if (!WAITUNTIL_OPTIONS.includes(waitUntil)) {
@@ -91,6 +93,7 @@ async function run() {
       devices: includedDevices,
       fullPage,
       type: screenshotType,
+      filePrefix,
       waitUntil,
       waitForSelector,
       waitForSelectorOptions,
@@ -170,8 +173,8 @@ async function run() {
       for (const { width, height } of DEFAULT_DESKTOP_VIEWPOINT_RATIO) {
         // filename with/without post fix commit hash name
         const desktopPath = noCommitHashFileName
-          ? `${PATH}desktopPage${width}x${height}.${screenshotType}`
-          : `${PATH}desktopPage${width}x${height}-${POST_FIX}.${screenshotType}`;
+          ? `${PATH}${filePrefix}desktopPage${width}x${height}.${screenshotType}`
+          : `${PATH}${filePrefix}desktopPage${width}x${height}-${POST_FIX}.${screenshotType}`;
 
         await desktopPage.setViewport({ width, height });
         await desktopPage.screenshot({
@@ -196,7 +199,7 @@ async function run() {
 
       for (const [index, page] of mobilePages.entries()) {
         // filename with/without post fix commit hash name
-        let mobilePath = `${PATH}${includedDevices[index].replace(/ /g, '_')}`;
+        let mobilePath = `${PATH}${filePrefix}${includedDevices[index].replace(/ /g, '_')}`;
         mobilePath = noCommitHashFileName
           ? `${mobilePath}.${screenshotType}`
           : `${mobilePath}-${POST_FIX}.${screenshotType}`;
